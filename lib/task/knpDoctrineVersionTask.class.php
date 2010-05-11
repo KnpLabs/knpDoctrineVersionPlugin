@@ -66,8 +66,7 @@ EOF;
       {
         if($version > $latestVersion)
         {
-          $this->logSection('doctrine', 'You are trying to migrate to an unknown version (latest is '.$latestVersion.')', null, 'ERROR');
-          return;
+          $this->logSection('doctrine', 'You are trying to migrate to an unknown version (latest is '.$latestVersion.')', null, 'WARN');  
         }
       }
       elseif('latest' === $version)
