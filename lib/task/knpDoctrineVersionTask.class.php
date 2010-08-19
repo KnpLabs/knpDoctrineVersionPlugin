@@ -15,7 +15,7 @@
   protected function configure()
   {
     $this->addArguments(array(
-      new sfCommandArgument('version', sfCommandArgument::OPTIONAL, 'Force this version number. Leaver empty to simply get the current version'),
+      new sfCommandArgument('version', sfCommandArgument::OPTIONAL, 'Force this version number. Leaver empty to simply print the current version.'),
     ));
 
     $this->addOptions(array(
@@ -31,13 +31,9 @@ The [doctrine:version|INFO] task can get the current Doctrine migration version:
 
   [./symfony doctrine:version|INFO]
 
-Provide a version argument to change the current version (without migrating):
+Provide a version argument to change the current version (skipping migrations):
 
   [./symfony doctrine:version 10|INFO]
-
-To change the current version to the latest known version:
-
-  [./symfony doctrine:version latest|INFO]
 
 EOF;
   }
@@ -51,35 +47,23 @@ EOF;
     
     $migration = new Doctrine_Migration();
     
-    $latestVersion = $migration->getLatestVersion();
     $currentVersion = $migration->getCurrentVersion();
     
     if(!isset($arguments['version']))
     {
-      $this->logSection('doctrine', 'Current migration version is '.$currentVersion.' (latest is '.$latestVersion.')');
+      $this->logSection('doctrine', 'Current migration version is '.$currentVersion);
     }
     else
     {
       $version = $arguments['version'];
       
-      if(is_numeric($version))
+      if(!is_numeric($version))
       {
-        if($version > $latestVersion)
-        {
-          $this->logSection('doctrine', 'You are trying to migrate to an unknown version (latest is '.$latestVersion.')', null, 'WARN');  
-        }
-      }
-      elseif('latest' === $version)
-      {
-        $version = $latestVersion;
-      }
-      else
-      {
-        $this->logSection('doctrine', 'Unknwon version '.$version, null, 'ERROR');
+        $this->logSection('doctrine', 'Unknown version '.$version, null, 'ERROR');
         return;
       }
       $migration->setCurrentVersion($version);
-      $this->logSection('doctrine', 'Current migration version was forced to '.$version. ' (latest is '.$latestVersion.')');
+      $this->logSection('doctrine', 'Current migration version was forced to '.$version);
     }
   }
 }
